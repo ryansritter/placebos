@@ -1,0 +1,129 @@
+---
+title: "The problem of placebos in research on the impact of social media on people's well-being"
+authors: 
+- admin
+date: 2023-05-22
+categories: []
+tags: []
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE)
+
+### load libraries
+library(tidyverse)
+
+### get data
+# available for public download @ https://data.humdata.org/dataset/social-connections-survey
+df <- read_csv(
+    "data/sosc_2022_10_19_aggregate_data_weighted.csv",
+    show_col_types = FALSE
+    ) %>%
+    filter(
+        variable %in% c(
+            "social_media_lonely"
+        ),
+        grepl("More", value) | grepl("Less", value)
+    )
+```
+
+Research on the effect of social media on people's well-being is challenging, for many reasons. In this post I highlight one such reason that is often ignored in experimental research on this important topic: **placebo effects**. 
+
+*Note: all views expressed in this post are my own -- they do not represent the views of any company or organization.* 
+
+In short, placebo effects can arise any time there is a difference in expectations about the effect of an intervention on the outcome(s) of interest between the treatment and control group(s) in an experiment. 
+
+This is why, for example, in medical research about the efficacy of a new drug there is a treatment group (which receives the drug) and a control group (which receives a placebo pill) so both groups think they have taken the drug and have the same expectation about its benefits. Ideally a "double blind" procedure is also used so neither the participant nor the researcher administering the study is aware of which condition people have been assigned to. In this way, any effect of treatment can be more confidently attributed to the drug itself rather than differences in expectations.
+
+In psychology research investigating the impact of social media on people's well-being, however, controlling for people's expectations is more challenging -- double blind experimental designs are not possible. That is, people know exactly which group they have been assigned to (e.g., stop using social media) and bring with them expectations about what impact that treatment *should* have on their well-being. If people in the treatment and control groups of an experiment have different expectations about what effect using (or not using) social media has on their well-being, then causal inference is necessarily undermined because the possibility of placebo effects has not been accounted for.
+
+## What *are* people's expectations about the effect of social media on their well-being?
+
+While this question should always be addressed in the context of a particular study and outcome(s) of interest, there's good data out there we can use as a starting point. 
+
+For example, the [Gallup/Meta State of Social Connections study](https://dataforgood.facebook.com/dfg/docs/2022-state-of-social-connections-study) includes nationally representative samples of adults (age 15+) in 7 countries (Brazil, Egypt, France, India, Indonesia, Mexico, United States) and asks self-reported expectations about the impact of social media on people's feelings of loneliness (see Data appendix below for more information):
+
+```{r echo=FALSE}
+df %>% 
+    ggplot(aes(x = factor(country, levels = c("US", "BR", "FR", "MX", "IN", "EG", "ID")), y = estimate_weighted * 100, fill = value)) +
+    geom_col(position = position_dodge(.7), color = "dark gray") +
+    geom_errorbar(
+        aes(
+            ymin = estimate_weighted_95ci_low * 100,
+            ymax = estimate_weighted_95ci_upp * 100
+        ),
+        width = .1,
+        linewidth = .5,
+        position = position_dodge(.7)
+    ) +
+    ylim(0, 100) +
+    labs(
+        title = '"Do you personally think that social media makes people feel more lonely\nor less lonely? By lonely, I mean how much people feel emotionally isolated\nfrom other people."',
+        subtitle = 'Weighted % of people responding "More lonely" vs. "Less lonely',
+        x = "Country",
+        y = "",
+        caption = "Error bars are 95% confidence intervals\n'Don't know'/'No response' options are not displayed\nData source: Aggregate data from Gallup/Meta State of Social Connections study",
+        fill = ""
+    ) +
+    scale_fill_manual(values = c("#a6cee3","#1f78b4")) +
+    theme_minimal() +
+    theme(legend.position = "top")
+```
+
+Notably, in all countries except for the United States more people think that social media has a positive effect on people's feelings of loneliness (i.e., makes people feel *less* lonely). This pattern reverses in the United States where a slight majority of people think that social media makes people feel *more* lonely.
+
+Given these findings, if we were to run an experiment to test the effect of social media on feelings of loneliness without accounting for the possibility of differential expectations between our treatment and control group(s), then our ability to definitively conclude that any observed differences are due to treatment (and not a placebo effect) would be compromised.
+
+## Solving the problem of placebos
+
+**Solving this problem is challenging but critical to the scientific integrity of research on the effect of social media on people's well-being.** 
+
+Practically speaking, it doesn't really matter if people benefit from using (or not using) social media due fully or in part to placebo effects - they still benefit either way. 
+
+But scientifically speaking, it matters whether the causal mechanism is actually the treatment or expectations about the treatment, and without accounting for placebo effects we won't be able to untangle this important question.
+
+So how do we solve this problem?
+
+As outlined by [Boot et al. (2013)](https://journals.sagepub.com/doi/10.1177/1745691613491271?icid=int.sj-full-text.citing-articles.60), there are a few approaches:
+
+* Explicitly assess expectations.  
+* Carefully choose conditions and outcomes that are not influenced by differential expectations.
+* Use alternative designs that manipulate and measure expectations directly.
+
+For example, the possibility of differential expectations in already published studies could be tested by recruiting samples of participants from the same population that was used in the study, describing the treatment/control condition(s) that were used, and then assessing peoples expectations about their impact on the outcome(s) that were measured. If there is evidence that differential expectations are consistent with the pattern of results found in the published study, then it would suggest that placebo effects have not been adequately accounted for. This same kind of procedure should also be used *before* executing a study, to help choose the best treatment/control tasks and outcomes so expectations are the same across them.
+
+## Takeaway
+
+Given that we are not able to execute double-blind studies as in clinical trials -- and benefit from the increased confidence about causal inference that those experimental designs afford -- psychology studies on the effect of social media on people's well-being must adequately account for expectations before definitive statements about causality can be made.
+
+*Note: full R Markdown used for this post is available @ https://github.com/ryansritter/placebos*
+
+### Recommendations for further reading
+
+* [Boot et al., 2013](https://journals.sagepub.com/doi/10.1177/1745691613491271?icid=int.sj-full-text.citing-articles.60) - Overview of the problem of placebos in psychology research.
+* [Kross et al., 2021](https://www.cell.com/trends/cognitive-sciences/fulltext/S1364-6613(20)30251-5) - Overview of the evolution or research on the relationship between social media and well-being.  
+* [Verduyn et al. 2021](https://journals.sagepub.com/doi/full/10.1177/09637214211053637) - Framework for considering more nuance about *how* social media is used and its impact on well-being.
+
+### Data appendix
+
+In 2022 Meta and Gallup collaborated with some of the world’s top social scientists on the [State of Social Connections study](https://dataforgood.facebook.com/dfg/docs/2022-state-of-social-connections-study), which offers a first-of-its-kind look at how social connections vary across different geographic regions. 
+
+The data includes nationally representative samples of adults (age 15+) in 7 countries: Brazil (BR), Egypt (EG), France (FR), India (IN), Indonesia (ID), Mexico (MX), and United States (US).
+
+Check out these links to learn more:
+
+* [Report of main findings](https://dataforgood.facebook.com/dfg/resources/state-of-social-connections-report)
+* [Methodology report](https://dataforgood.facebook.com/dfg/resources/state-of-social-connections-methodology-report)
+* [Survey instrument](https://dataforgood.facebook.com/dfg/resources/social-connections-survey-instrument)
+* [Multiple regression tables](https://dataforgood.facebook.com/dfg/resources/state-of-social-connections-multiple-regression-tables)
+* [Aggregate data download](https://data.humdata.org/dataset/social-connections-survey)
+* [Micro data request form](https://dataforgood.facebook.com/dfg/tools/social-connections-survey#accessdata)
+
+In this notebook I used the aggregate data (available for public download using the link above). The full item wording and response options are:
+
+**"Do you personally think that social media makes people feel more lonely or less lonely? By lonely, I mean how much people feel emotionally isolated from other people."**  
+
+* More lonely  
+* Less lonely  
+* [Don't know/No response]
+
