@@ -102,7 +102,7 @@ Given that we are not able to execute double-blind studies as in clinical trials
 
 * [Boot et al., 2013](https://journals.sagepub.com/doi/10.1177/1745691613491271?icid=int.sj-full-text.citing-articles.60) - Overview of the problem of placebos in psychology research.
 * [Kross et al., 2021](https://www.cell.com/trends/cognitive-sciences/fulltext/S1364-6613(20)30251-5) - Overview of the evolution or research on the relationship between social media and well-being.  
-* [Verduyn et al. 2021](https://journals.sagepub.com/doi/full/10.1177/09637214211053637) - Framework for considering more nuance about *how* social media is used and its impact on well-being.
+* [Ernala et al., 2022](https://dl.acm.org/doi/10.1145/3491102.3517569) - Mindsets matter: How beliefs about Facebook moderate the association between time spent and well-being 
 
 ### Data appendix
 
